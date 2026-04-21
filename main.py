@@ -160,8 +160,10 @@ def fight():
 
     if game["health"] <= 0:
         print("\n\nUnfortunately, you were no match for them.\nYou die on the ground, wounded.\nTHE END.")
-
-    if foeHealth <= 0:
+    elif foeHealth <= 0:
         print("\n\nYou won! The bandit staggers backwards and collapses onto the ground.\nThey're dead.\nThe rest of the bandits look at you in shock and quickly surrender. You gain enough supplies from them to relax comfortably for a long, long time.\nTHE END.")
+    
+    if game["health"] <= 0 and foeHealth <= 0:
+        print("\n\nYou were both evenly matched! Both you and the bandit collapse, exhausted from the fight.\nWhile it was a tie, you showed off your capabilities and that was enough for you to join their ranks.\nTHE END.")
 
 setup()
