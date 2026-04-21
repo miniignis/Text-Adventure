@@ -1,4 +1,0 @@
-== PROJECT GOALS ==
-✔️ figure out python some more
-- probably plan an OOP structure to make the text adventure easy to make (less if-nesting)
-- that's it
