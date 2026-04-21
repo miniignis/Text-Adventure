@@ -1,7 +1,13 @@
+import random
+
 game = {
     "alive" : True,
+    "health" : 3,
     "name" : "",
-    "inventory" : [],
+    "inventory" : [
+        "pocket lint"
+    ],
+    "sights" : [] # Locations or things the player has seen.
 }
 
 def getAction(prompt):
@@ -13,25 +19,140 @@ def getAction(prompt):
 
 def setup():
     game["name"] = getAction("Before the game starts, what is your name?")
+    print("\n\nYou wake up in a prison cell.\nYour name is " + game["name"] + ", and you have no recollection of how you arrived here.")
     prison_cell()
 
-def sleep():
+# PRISON CELL CHOICES
+def display_inventory():
+    print("\n\nYour current inventory:")
+    for item in game["inventory"]:
+        print(item)
+
+def prison_cell_look():
+    print("\n\nYou look around the room.\nThere's dirt and grime all along the walls and floors, spiderwebs are tucked into nearly every little corner of the room. Gross.\nThe only exit is a steel door. It's locked.")
+    prison_cell()
+
+def prison_cell_sleep():
     print("\n\nAll things considered, you'd much rather go back to bed.\nYou relax in the same mold-invested bed you woke up in and fall sleep.\nTHE END!")
 
+def prison_cell_scavenge():
+    if "cell key" in game["inventory"]: #If they already have the key, don't do anything.
+        print("\n\nThere's nothing else to look for.\nThe room is torn up by your previous search.")
+        prison_cell()
+
+    print("\n\nYou search for anything of use.\nBy the end of your search, you found a key and an old lighter")
+    game["inventory"].append("cell key")
+    game["inventory"].append("lighter")
+    prison_cell()
+
 def prison_cell():
-    print("\n\nYou wake up in a prison cell.\nYour name is " + game["name"] + ", and you have no recollection of how you arrived here.")
-
-    action = getAction("What now? You can LOOK, SLEEP, or INVENTORY.")
-
+    action = getAction("What now? You can LOOK, LEAVE, SCAVENGE, SLEEP, or check your INVENTORY.")
     match(action):
         case "look":
-            pass
+            prison_cell_look()
+        case "leave":
+            if "cell key" in game["inventory"]:
+                print("\n\nAfter unlocking the door, you step outside to see... nothing.\nIt's completely dark!\nYou use the lighter from earlier to find your way around.")
+                hallway()
+            else:
+                print("\n\nThe door keeping you inside is locked...")
+                prison_cell()
         case "sleep":
-            sleep()
+            prison_cell_sleep()
+        case "scavenge":
+            prison_cell_scavenge()
         case "inventory":
-            pass
+            display_inventory()
+            prison_cell()
         case _:
             print("That's not an option. Try again.\n")
             prison_cell()
+
+def hallway():
+    action = getAction("What now? You can GO LEFT or GO RIGHT.")
+    match(action):
+        case "go left":
+            print("\n\nThe air grows colder as you go further to the left.\nYou almost turned back because of the freezing temperature, but a light at the end of it kept you going. An exit!\n Going through it, you learn that you are in the middle of a vast, snowing tundra.")
+            tundra()
+        case "go right":
+            print("\n\nThe air grows hotter as you go further to the right.\nYou almost turned back because of the scorching heat, but a light at the end of it kept you going. An exit?\nIt was not.\nWhen you reach the end you find the source of the light was a campfire, one lit by what you can assume are several other prisoners.\nThey don't look friendly.")
+            game["sights"].append("bandits")
+            bandits()
+        case _:
+            print("That's not an option. Try again.\n")
+            hallway()
+
+def tundra():
+    action = getAction("What now? You can LOOK or LEAVE.")
+    match(action):
+        case "look":
+            print("\n\nThe only thing you can see through the heavy snowfall is a small cabin a short distance away. \nIt's almost entirely buried in snow, but it'd be suitable shelter from the temperature.")
+            game["sights"].append("cabin")
+            tundra()
+        case "leave":
+            if "cabin" in game["sights"]:
+                print("\n\nSeeing nothing else in the frozen landscape, you make a run for the cabin.\nYou manage to reach it and take shelter before hypothermia sets in.")
+                cabin()
+            else:
+                print("\n\nYour newfound sense of freedom clearly got the best of you, and you ran out into the snowstorm without a second thought!\nYou freeze to death hours later.\nTHE END.")
+        case _:
+            print("That's not an option. Try again.\n")
+            tundra()
+
+def bandits():
+    action = getAction("What now? You can FIGHT or RUN.")
+    match(action):
+        case "fight":
+            print("\n\nYou weren't raised a coward. You stay in place as one of them gets up to deal with you.")
+            fight()
+        case "run":
+            print("\n\nYou don't stick around for long, and quickly flee the scene back to the dark hallway.\nYou go left this time.")
+            print("\n\nThe air grows colder as you go further to the left.\nYou almost turned back because of the freezing temperature, but a light at the end of it kept you going (plus, those bandits would've probably killed you). An exit!\n Going through it, you learn that you are in the middle of a vast, snowing tundra.")
+            tundra()
+        case _:
+            print("That's not an option. Try again.\n")
+            bandits()
+
+def fight():
+    print("\n\nThe fight begins!")
+    foeHealth = 3 # Only have to hit them 3 times.
+    while foeHealth > 0 and game["health"] > 0:
+        foeRoll = random.random() # Determines what the enemy will do.
+        braced = False # If the player is bracing themselves or not.
+
+        if foeRoll > 0.5: # > 0.5 = HURT.
+            print("The bandit is winding up a nasty punch...")
+        else:
+            print("The bandit is taking a breather...")
+
+
+        action = getAction("Quick, what do you do? You can ATTACK or BRACE.")
+        match(action):
+            case "attack":
+                print("\n\nYou strike a mean blow to them!")
+                foeHealth -= 1
+            case "brace":
+                print("\n\nYou brace yourself for their next attack.")
+                braced = True
+            case _:
+                print("Not an option. Turn wasted.\n")
+
+        if foeRoll > 0.5: # > 0.5 = HURT.
+            print("The bandit attempts to hit you...")
+            if braced:
+                print("but with your guard up, it did nothing!")
+            else:
+                print("You get hit hard and bleed a little.")
+                game["health"] -= 1
+        else:
+            print("The bandit gets ready.")
+            if braced:
+                print("Bracing did nothing.")
+
+    if game["health"] <= 0:
+        print("\n\nUnfortunately, you were no match for them.\nYou die on the ground, wounded.\nTHE END.")
+
+    if foeHealth <= 0:
+        print("\n\nYou won! The bandit staggers backwards and collapses onto the ground.\nThey're dead.\nThe rest of the bandits look at you in shock and quickly surrender. You gain enough supplies from them to relax comfortably for a long, long time.\nTHE END.")
 
 setup()
