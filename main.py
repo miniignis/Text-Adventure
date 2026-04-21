@@ -91,13 +91,22 @@ def tundra():
             tundra()
         case "leave":
             if "cabin" in game["sights"]:
-                print("\n\nSeeing nothing else in the frozen landscape, you make a run for the cabin.\nYou manage to reach it and take shelter before hypothermia sets in.")
+                print("\n\nSeeing nothing else in the frozen landscape, you make a run for the cabin.\nYou manage to reach it and take shelter before hypothermia sets in.\nIt's incredibly cozy inside the cabin, unlike your rotting cell from before.\nThere's a phone nearby.")
                 cabin()
             else:
-                print("\n\nYour newfound sense of freedom clearly got the best of you, and you ran out into the snowstorm without a second thought!\nYou freeze to death hours later.\nTHE END.")
+                print("\n\nYour newfound sense of freedom clearly got the best of you, and you ran out into the snowstorm without a second thought!\nYou freeze to death an hour later.\nTHE END.")
         case _:
             print("That's not an option. Try again.\n")
             tundra()
+
+def cabin():
+    action = getAction("What now? You can finally REST.")
+    match(action):
+        case "rest":
+            print("After such a long trip in the cold, you decide sleep is the best option.\nYou crawl into bed and fall asleep, planning on using the phone to call for help later.\nTHE END.")
+        case _:
+            print("That's not an option. Try again.\n")
+            cabin() 
 
 def bandits():
     action = getAction("What now? You can FIGHT or RUN.")
