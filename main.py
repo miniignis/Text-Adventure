@@ -1,13 +1,25 @@
 import random
 
-game = {
-    "alive" : True,
-    "health" : 3,
-    "name" : "",
-    "inventory" : [
-        "pocket lint"
-    ],
-    "sights" : [] # Locations or things the player has seen.
+# SETUP GAME LOGIC
+def resetGameData():
+    return {
+        "alive" : True,
+        "health" : 3,
+        "inventory" : [
+            "pocket lint"
+        ],
+        "sights" : [] # Locations or things the player has seen.
+    }
+
+game = resetGameData()
+name = ""
+endingProgress = { # These are changed to True when the ending is achieved.
+    "Sleep" : False,
+    "Sheltered" : False,
+    "Death" : False,
+    "King" : False,
+    "Draw" : False,
+    "Frozen" : False
 }
 
 def getAction(prompt):
@@ -17,9 +29,14 @@ def getAction(prompt):
         response = input(prompt + "\n")
     return response.lower() # Return response is lowercase to make things easier.
 
+# GAMEPLAY
 def setup():
-    game["name"] = getAction("Before the game starts, what is your name?")
-    print("\n\nYou wake up in a prison cell.\nYour name is " + game["name"] + ", and you have no recollection of how you arrived here.")
+    resetGameData()
+    print("\t== ENDING PROGRESS ==")
+    for key, value in endingProgress.items():
+        print(key + " Ending : " + str(value))
+    print("\t=====================")
+    print("\n\nYou wake up in a prison cell.\nYour name is " + name + ", and you have no recollection of how you arrived here.")
     prison_cell()
 
 # PRISON CELL CHOICES
@@ -34,6 +51,7 @@ def prison_cell_look():
 
 def prison_cell_sleep():
     print("\n\nAll things considered, you'd much rather go back to bed.\nYou relax in the same mold-invested bed you woke up in and fall sleep.\nTHE END!")
+    endingProgress["Sleep"] = True
 
 def prison_cell_scavenge():
     if "cell key" in game["inventory"]: #If they already have the key, don't do anything.
@@ -95,6 +113,8 @@ def tundra():
                 cabin()
             else:
                 print("\n\nYour newfound sense of freedom clearly got the best of you, and you ran out into the snowstorm without a second thought!\nYou freeze to death an hour later.\nTHE END.")
+                endingProgress["Frozen"] = True
+
         case _:
             print("That's not an option. Try again.\n")
             tundra()
@@ -103,7 +123,9 @@ def cabin():
     action = getAction("What now? You can finally REST.")
     match(action):
         case "rest":
-            print("After such a long trip in the cold, you decide sleep is the best option.\nYou crawl into bed and fall asleep, planning on using the phone to call for help later.\nTHE END.")
+            print("After such a long trip in the cold, you decide resting is the best option.\nYou crawl into bed and fall asleep, planning on using the phone to call for help later.\nTHE END.")
+            endingProgress["Sheltered"] = True
+
         case _:
             print("That's not an option. Try again.\n")
             cabin() 
@@ -160,10 +182,22 @@ def fight():
 
     if game["health"] <= 0:
         print("\n\nUnfortunately, you were no match for them.\nYou die on the ground, wounded.\nTHE END.")
+        endingProgress["Death"] = True
+
     elif foeHealth <= 0:
-        print("\n\nYou won! The bandit staggers backwards and collapses onto the ground.\nThey're dead.\nThe rest of the bandits look at you in shock and quickly surrender. You gain enough supplies from them to relax comfortably for a long, long time.\nTHE END.")
+        print("\n\nYou won! The bandit staggers backwards and collapses onto the ground.\nThey're dead.\nThe rest of the bandits look at you in shock and quickly surrender. You gain enough supplies from them to live like a king for a long, long time.\nTHE END.")
+        endingProgress["King"] = True
     
     if game["health"] <= 0 and foeHealth <= 0:
         print("\n\nYou were both evenly matched! Both you and the bandit collapse, exhausted from the fight.\nWhile it was a tie, you showed off your capabilities and that was enough for you to join their ranks.\nTHE END.")
+        endingProgress["Draw"] = True
 
+
+# Game loop (allows for replaying & ending tracking.)
+name = getAction("Before the game starts, what is your name?")
 setup()
+while True:
+    running = getAction("Play again?: (Y/N)")
+    if running != "y":
+        break
+    setup()
