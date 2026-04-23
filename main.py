@@ -1,16 +1,6 @@
 import random
 
 # SETUP GAME LOGIC
-def resetGameData():
-    return {
-        "alive" : True,
-        "health" : 3,
-        "inventory" : [
-            "pocket lint"
-        ],
-        "sights" : [] # Locations or things the player has seen.
-    }
-
 game = {}
 name = ""
 location = None
@@ -22,6 +12,16 @@ endingProgress = { # These are changed to True when the ending is achieved.
     "Draw" : False,
     "Frozen" : False
 }
+
+def resetGameData():
+    return {
+        "alive" : True,
+        "health" : 3,
+        "inventory" : [
+            "pocket lint"
+        ],
+        "sights" : [] # Locations or things the player has seen.
+    }
 
 def getAction(prompt):
     response = input(prompt + "\n")
@@ -41,12 +41,12 @@ def setup():
     print("\t=====================")
     print("\n\nYou wake up in a prison cell.\nYour name is " + name + ", and you have no recollection of how you arrived here.")
 
-# PRISON CELL CHOICES
 def display_inventory():
     print("\n\nYour current inventory:")
     for item in game["inventory"]:
         print(item)
 
+# PRISON CELL CHOICES
 def prison_cell_look():
     print("\n\nYou look around the room.\nThere's dirt and grime all along the walls and floors, spiderwebs are tucked into nearly every little corner of the room. Gross.\nThe only exit is a steel door. It's locked.")
 
@@ -63,7 +63,7 @@ def prison_cell_scavenge():
     game["inventory"].append("cell key")
     game["inventory"].append("lighter")
 
-def prison_cell()   :
+def prison_cell():
     while True:
         action = getAction("What now? You can LOOK, LEAVE, SCAVENGE, SLEEP, or check your INVENTORY.")
         match(action):
@@ -85,6 +85,7 @@ def prison_cell()   :
             case _:
                 print("That's not an option. Try again.\n")
 
+# HALLWAY CHOICES
 def hallway():
     while True:
         action = getAction("What now? You can GO LEFT, GO RIGHT, or check your INVENTORY.")
@@ -101,6 +102,7 @@ def hallway():
             case _:
                 print("That's not an option. Try again.\n")
 
+# TUNDRA CHOICES
 def tundra():
     while True:
         action = getAction("What now? You can LOOK, LEAVE, or check your INVENTORY.")
@@ -121,6 +123,7 @@ def tundra():
             case _:
                 print("That's not an option. Try again.\n")
 
+# CABIN ENDING
 def cabin():
     while True:
         action = getAction("What now? You can finally REST.")
@@ -132,6 +135,7 @@ def cabin():
             case _:
                 print("That's not an option. Try again.\n")
 
+# BANDIT ENDING
 def bandits():
     while True:
         action = getAction("What now? You can FIGHT or RUN.")
@@ -146,6 +150,7 @@ def bandits():
             case _:
                 print("That's not an option. Try again.\n")
 
+# FIGHT LOGIC
 def fight():
     while True:
         print("\n\nThe fight begins!")
@@ -198,7 +203,7 @@ def fight():
         return None
 
 
-# Game loop (allows for replaying & ending tracking.)
+# Game loop! (allows for replaying & ending tracking.)
 name = getAction("Before the game starts, what is your name?")
 while True:
     
